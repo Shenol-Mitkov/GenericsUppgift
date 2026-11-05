@@ -27,32 +27,41 @@ namespace GenericsUppg.Entities
             Console.WriteLine("Dagens meny:");
             foreach (var item in MenuItems)
             {
-                Console.WriteLine($"- {item}: {item.Price:C}");
+                Console.WriteLine($"- {item}");
             }
         }
 
         public void createOrder(Order order)
         {
             Orders.Enqueue(order);
-            Console.WriteLine($"Order med id {order} har lagts till i kön");
+            Console.WriteLine($"Order #{order.OrderId} för bord {order.TableNumber} har lagts till i kön");
         }
 
-        public void HandleOrders()
+        // Hanterar (tar bort) endast den FÖRSTA beställningen i kön
+        public void HandleOrder()
         {
-            while (Orders.Count > 0)
+            if (Orders.Count > 0)
             {
                 Order currentOrder = Orders.Dequeue();
-                Console.WriteLine($"Hanterar beställning med id {currentOrder}");
-                
+                Console.WriteLine($"Order #{currentOrder.OrderId} för bord {currentOrder.TableNumber} har hanterats och tagits bort från kön");
+            }
+            else
+            {
+                Console.WriteLine("Det finns inga beställningar att hantera.");
             }
         }
 
         public void ShowOrders()
         {
             Console.WriteLine("Nuvarande beställningar i kön:");
+            if (Orders.Count == 0)
+            {
+                Console.WriteLine("Kön är tom.");
+                return;
+            }
             foreach (var order in Orders)
             {
-                Console.WriteLine($"- Order med id {order}");
+                order.PrintOrder();
             }
         }
 
@@ -60,8 +69,8 @@ namespace GenericsUppg.Entities
         {
             if (Orders.Count > 0)
             {
-                Order nextOrder = Orders.Peek();
-                Console.WriteLine($"Nästa beställning i kön  är {nextOrder} med id {nextOrder}");
+                Console.WriteLine("Nästa beställning i kön:");
+                Orders.Peek().PrintOrder();
             }
             else
             {
@@ -72,6 +81,47 @@ namespace GenericsUppg.Entities
         public void ShowOrderCount()
         {
             Console.WriteLine($"Antal beställningar i kön: {Orders.Count}");
+        }
+
+
+        public void StartRestaurant()
+        {
+            Console.WriteLine("Välkommen till DigiRestaurant!");
+            Restaurant DigiRestaurant = new Restaurant();
+
+            DigiRestaurant.AddToMenu(new MenuItem(1, "Pizza", 99.99m));
+            DigiRestaurant.AddToMenu(new MenuItem(2, "Pasta", 79.99m));
+            DigiRestaurant.AddToMenu(new MenuItem(3, "Sallad", 49.99m));
+            DigiRestaurant.AddToMenu(new MenuItem(4, "Soppa", 39.99m));
+
+            DigiRestaurant.ShowMenu();
+
+            DigiRestaurant.createOrder(new Order(new List<MenuItem> { DigiRestaurant.MenuItems[0], DigiRestaurant.MenuItems[1] }, 1));
+            DigiRestaurant.createOrder(new Order(new List<MenuItem> { DigiRestaurant.MenuItems[2], DigiRestaurant.MenuItems[3] }, 2));
+            DigiRestaurant.createOrder(new Order(new List<MenuItem> { DigiRestaurant.MenuItems[0], DigiRestaurant.MenuItems[2] }, 3));
+
+            DigiRestaurant.ShowOrders();
+
+            DigiRestaurant.ShowOrderCount();
+
+            DigiRestaurant.ShowNextOrder();
+
+            DigiRestaurant.HandleOrder();
+
+            DigiRestaurant.ShowOrders();
+
+            DigiRestaurant.createOrder(new Order(new List<MenuItem> { DigiRestaurant.MenuItems[1], DigiRestaurant.MenuItems[3] }, 4));
+
+            DigiRestaurant.ShowOrders();
+
+            DigiRestaurant.HandleOrder();
+            DigiRestaurant.HandleOrder();
+
+            DigiRestaurant.ShowNextOrder();
+
+            DigiRestaurant.HandleOrder();
+
+            DigiRestaurant.ShowOrders();
         }
 
 

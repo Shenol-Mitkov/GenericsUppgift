@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GenericsUppg.Entities
+﻿namespace GenericsUppg.Entities
 {
     internal class Order
     {
-        // I denna klass använder vi i stället private fields
         static int orderIdCounter = 1;
         private int _orderId;
         private List<MenuItem> _orderItems;
@@ -14,12 +9,36 @@ namespace GenericsUppg.Entities
 
         public Order(List<MenuItem> orderItems, int tableNumber)
         {
-            // Automatiskt skapande av id
             _orderId = orderIdCounter;
             orderIdCounter++;
             _orderItems = orderItems;
             _tableNumber = tableNumber;
         }
 
+        public int OrderId => _orderId;
+        public int TableNumber => _tableNumber;
+        public List<MenuItem> OrderItems => _orderItems;
+
+        // Räknar ut totalpriset för alla rätter i beställningen
+        public decimal TotalPrice()
+        {
+            decimal total = 0;
+            foreach (var item in _orderItems)
+            {
+                total += item.Price;
+            }
+            return total;
+        }
+
+        // Skriver ut beställningen till konsolen (används av Restaurant)
+        public void PrintOrder()
+        {
+            Console.WriteLine($"Order #{_orderId} - Bord {_tableNumber}");
+            foreach (var item in _orderItems)
+            {
+                Console.WriteLine($"   * {item}");
+            }
+            Console.WriteLine($"   Totalt: {TotalPrice():C}");
+        }
     }
 }
